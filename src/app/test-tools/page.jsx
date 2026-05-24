@@ -4,6 +4,8 @@ import { useState } from 'react';
 
 export default function TestTools() {
   const [logs, setLogs] = useState([]);
+  const [selectedService, setSelectedService] = useState('1');
+  const [selectedProvider, setSelectedProvider] = useState('1');
 
   const addLog = (msg) => {
     setLogs(prev => [`[${new Date().toLocaleTimeString()}] ${msg}`, ...prev].slice(0, 50));
@@ -17,7 +19,7 @@ export default function TestTools() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           webhookId: `test-uuid-${Date.now()}`,
-          providerId: 1
+          providerId: parseInt(selectedProvider)
         })
       });
       const data = await response.json();
@@ -38,7 +40,7 @@ export default function TestTools() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           webhookId: fixedUuid,
-          providerId: 2
+          providerId: parseInt(selectedProvider)
         })
       }).then(res => res.json());
     });
@@ -65,7 +67,7 @@ export default function TestTools() {
           name: `Concurrent User ${i + 1}`,
           phone: randomPhone,
           city: 'Test City',
-          serviceType: '1',
+          serviceType: selectedService,
           description: 'Concurrency Test'
         })
       }).then(res => res.json());
@@ -86,26 +88,59 @@ export default function TestTools() {
       <h2 className="text-2xl font-bold text-gray-800">Testing Panel</h2>
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <button
-          onClick={handleResetQuota}
-          className="bg-purple-600 hover:bg-purple-700 text-white py-3 px-4 rounded-lg shadow transition-colors font-medium text-sm"
-        >
-          Reset Provider Quota via Webhook
-        </button>
+        <div className="flex flex-col gap-2">
+          <select 
+            value={selectedProvider}
+            onChange={(e) => setSelectedProvider(e.target.value)}
+            className="p-3 border rounded-lg border-gray-300 text-gray-700 bg-white"
+          >
+            {[1, 2, 3, 4, 5, 6, 7, 8].map(id => (
+              <option key={id} value={id}>Provider {id}</option>
+            ))}
+          </select>
+          <button
+            onClick={handleResetQuota}
+            className="bg-purple-600 hover:bg-purple-700 text-white py-3 px-4 rounded-lg shadow transition-colors font-medium text-sm flex-1"
+          >
+            Reset Quota via Webhook
+          </button>
+        </div>
         
-        <button
-          onClick={handleTestIdempotency}
-          className="bg-indigo-600 hover:bg-indigo-700 text-white py-3 px-4 rounded-lg shadow transition-colors font-medium text-sm"
-        >
-          Test Webhook Idempotency
-        </button>
+        <div className="flex flex-col gap-2">
+          <select 
+            value={selectedProvider}
+            onChange={(e) => setSelectedProvider(e.target.value)}
+            className="p-3 border rounded-lg border-gray-300 text-gray-700 bg-white"
+          >
+            {[1, 2, 3, 4, 5, 6, 7, 8].map(id => (
+              <option key={id} value={id}>Provider {id}</option>
+            ))}
+          </select>
+          <button
+            onClick={handleTestIdempotency}
+            className="bg-indigo-600 hover:bg-indigo-700 text-white py-3 px-4 rounded-lg shadow transition-colors font-medium text-sm flex-1"
+          >
+            Test Webhook Idempotency
+          </button>
+        </div>
         
-        <button
-          onClick={handleSimulateConcurrency}
-          className="bg-teal-600 hover:bg-teal-700 text-white py-3 px-4 rounded-lg shadow transition-colors font-medium text-sm"
-        >
-          Simulate Concurrency (10 Instant Leads)
-        </button>
+        <div className="flex flex-col gap-2">
+          <select 
+            value={selectedService}
+            onChange={(e) => setSelectedService(e.target.value)}
+            className="p-3 border rounded-lg border-gray-300 text-gray-700 bg-white"
+          >
+            <option value="1">Service 1 </option>
+            <option value="2">Service 2 </option>
+            <option value="3">Service 3 </option>
+          </select>
+          <button
+            onClick={handleSimulateConcurrency}
+            className="bg-teal-600 hover:bg-teal-700 text-white py-3 px-4 rounded-lg shadow transition-colors font-medium text-sm"
+          >
+            Simulate Concurrency (10 Instant Leads)
+          </button>
+        </div>
       </div>
 
       <div className="bg-gray-900 rounded-lg shadow overflow-hidden flex flex-col h-96">
